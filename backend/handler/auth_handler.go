@@ -9,11 +9,12 @@ import (
 )
 
 type AuthHandler struct {
-	service service.AuthService
+	service  service.AuthService
+	validate *validator.Validate
 }
 
 func NewAuthHandler(service service.AuthService) *AuthHandler {
-	return &AuthHandler{service: service}
+	return &AuthHandler{service: service, validate: validator.New()}
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
@@ -24,9 +25,8 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	var validate = validator.New()
-	if err := validate.Struct(input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "validation error"})
+	if err := h.validate.Struct(input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "validation error", "error": err.Error()})
 		return
 	}
 
@@ -45,8 +45,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 		return
 	}
-	var validate = validator.New()
-	if err := validate.Struct(input); err != nil {
+	if err := h.validate.Struct(input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "validation error"})
 		return
 	}
@@ -64,16 +63,14 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 func (h *AuthHandler) Refresh(c *gin.Context) {
-	var body struct {
-		RefreshToken string `json:"refresh_token"`
-	}
+	refreshToken := c.GetHeader("x-Refresh-Token")
 
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if refreshToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing refresh token"})
 		return
 	}
 
-	token, err := h.service.Refresh(body.RefreshToken)
+	token, err := h.service.Refresh(refreshToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
 		return
@@ -85,17 +82,15 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
-	var body struct {
-		RefreshToken string `json:"refresh_token"`
-	}
+	refreshToken := c.GetHeader("x-Refresh-Token")
 
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if refreshToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing refresh token"})
 		return
 	}
 
-	if err := h.service.Logout(body.RefreshToken); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to logout"})
+	if err := h.service.Logout(refreshToken); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
 		return
 	}
 

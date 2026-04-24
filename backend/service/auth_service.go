@@ -80,7 +80,6 @@ func (s *authService) Login(input LoginInput) (string, string, error) {
 		return "", "", err
 	}
 
-	// save refresh token
 	err = s.refreshRepo.Create(user.ID, refreshToken)
 	if err != nil {
 		return "", "", err

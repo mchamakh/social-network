@@ -33,7 +33,7 @@ type RegisterInput struct {
 	Birthday  string `json:"birthday" validate:"required"`
 
 	NickName *string `json:"nickname,omitempty" validate:"omitempty,min=2"`
-	Avatar   *string `json:"avatar,omitempty" validate:"omitempty,url"`
+	Avatar   *string `json:"avatar,omitempty" validate:"omitempty"`
 	AboutMe  *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 }
 

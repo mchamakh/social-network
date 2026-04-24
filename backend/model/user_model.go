@@ -7,22 +7,22 @@ import (
 )
 
 type User struct {
-	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
 
-	FirstName string  `gorm:"not null" validate:"required,min=2"`
-	LastName  string  `gorm:"not null" validate:"required,min=2"`
-	NickName  *string `gorm:"uniqueIndex" validate:"omitempty,min=2"`
+	FirstName string  `gorm:"not null" json:"first_name" validate:"required,min=2"`
+	LastName  string  `gorm:"not null" json:"last_name" validate:"required,min=2"`
+	NickName  *string `gorm:"uniqueIndex" json:"nickname,omitempty" validate:"omitempty,min=2"`
 
-	Birthday string `gorm:"not null" validate:"required"`
+	Birthday string `gorm:"not null" json:"birthday" validate:"required"`
 
-	Email    string `gorm:"uniqueIndex" validate:"required,email"`
-	Password string `gorm:"not nul" validate:"required,min=6"`
+	Email    string `gorm:"uniqueIndex" json:"email" validate:"required,email"`
+	Password string `gorm:"not null" json:"-" validate:"required,min=6"`
 
-	Avatar  *string `validate:"omitempty,url"`
-	AboutMe *string `validate:"omitempty,max=200"`
+	Avatar  *string `json:"avatar,omitempty" validate:"omitempty,url"`
+	AboutMe *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 
-	CreatedAt time.Time
-	UpdateAt  time.Time
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserRepository interface {

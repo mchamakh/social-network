@@ -15,6 +15,7 @@ func NewRouter(c *container.Container) *gin.Engine {
 	api := r.Group("/api")
 
 	RegisterUserRoutes(api, c.UserHandler)
+	RegisterAuthRoutes(api, c.AuthHandler)
 
 	return r
 }

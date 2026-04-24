@@ -75,7 +75,7 @@ func (h *UserHandler) GetAll(c *gin.Context) {
 }
 
 func (h *UserHandler) GetByEmail(c *gin.Context) {
-	email := c.Param("email")
+	email := c.Query("email")
 
 	if email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": "email is required"})

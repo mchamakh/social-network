@@ -7,15 +7,20 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	FirstName string
-	LastName  string
-	NickName  *string `gorm:"uniqueIndex"`
-	Birthday  string
-	Email     string `gorm:"uniqueIndex"`
-	Password  string
-	Avatar    *string
-	AboutMe   *string
+	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+
+	FirstName string  `gorm:"not null" validate:"required,min=2"`
+	LastName  string  `gorm:"not null" validate:"required,min=2"`
+	NickName  *string `gorm:"uniqueIndex" validate:"omitempty,min=2"`
+
+	Birthday string `gorm:"not null" validate:"required"`
+
+	Email    string `gorm:"uniqueIndex" validate:"required,email"`
+	Password string `gorm:"not nul" validate:"required,min=6"`
+
+	Avatar  *string `validate:"omitempty,url"`
+	AboutMe *string `validate:"omitempty,max=200"`
+
 	CreatedAt time.Time
 	UpdateAt  time.Time
 }

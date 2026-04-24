@@ -66,7 +66,7 @@ func (s *authService) Login(input LoginInput) (string, string, error) {
 		return "", "", fmt.Errorf("invalid credentials")
 	}
 
-	if err := pkg.ComparePassword(user.Password, input.Password); err != nil {
+	if err := pkg.ComparePassword(input.Password, user.Password); err != nil {
 		return "", "", fmt.Errorf("invalid credentials")
 	}
 

@@ -12,8 +12,22 @@ import (
 	"gorm.io/gorm"
 )
 
+var validate = validator.New()
+
 type UserHandler struct {
 	service service.UserService
+}
+
+type CreateUserInput struct {
+	FirstName string `json:"first_name" validate:"required,min=2"`
+	LastName  string `json:"last_name" validate:"required,min=2"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required,min=6"`
+	Birthday  string `json:"birthday" validate:"required"`
+
+	NickName *string `json:"nickname,omitempty" validate:"omitempty,min=2"`
+	Avatar   *string `json:"avatar,omitempty" validate:"omitempty,url"`
+	AboutMe  *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 }
 
 func NewUserHandler(service service.UserService) *UserHandler {
@@ -21,24 +35,33 @@ func NewUserHandler(service service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
-	var user model.User
+	var input CreateUserInput
 
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "invalid JSON payload"})
 		return
 	}
-	var validate = validator.New()
-
-	if err := validate.Struct(user); err != nil {
+	if err := validate.Struct(input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "validation error"})
 		return
+	}
+
+	user := model.User{
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Email:     input.Email,
+		Password:  input.Password,
+		Birthday:  input.Birthday,
+		NickName:  input.NickName,
+		Avatar:    input.Avatar,
+		AboutMe:   input.AboutMe,
 	}
 	if err := h.service.Create(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "failed to create user"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "success", "error": "user created"})
+	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "user created"})
 
 }
 

@@ -12,8 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var validate = validator.New()
-
 type UserHandler struct {
 	service service.UserService
 }
@@ -41,6 +39,8 @@ func (h *UserHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "invalid JSON payload"})
 		return
 	}
+	var validate = validator.New()
+
 	if err := validate.Struct(input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "validation error"})
 		return

@@ -1,13 +1,11 @@
 package handler
 
 import (
-	"api/model"
 	"api/service"
 	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -30,39 +28,6 @@ type CreateUserInput struct {
 
 func NewUserHandler(service service.UserService) *UserHandler {
 	return &UserHandler{service: service}
-}
-
-func (h *UserHandler) Create(c *gin.Context) {
-	var input CreateUserInput
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "invalid JSON payload"})
-		return
-	}
-	var validate = validator.New()
-
-	if err := validate.Struct(input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "validation error"})
-		return
-	}
-
-	user := model.User{
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Email:     input.Email,
-		Password:  input.Password,
-		Birthday:  input.Birthday,
-		NickName:  input.NickName,
-		Avatar:    input.Avatar,
-		AboutMe:   input.AboutMe,
-	}
-	if err := h.service.Create(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "failed to create user"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "user created"})
-
 }
 
 func (h *UserHandler) GetAll(c *gin.Context) {

@@ -15,6 +15,9 @@ CREATE TABLE users (
     avatar TEXT,
     about_me TEXT,
 
+    is_private BOOLEAN DEFAULT FALSE,
+
+
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

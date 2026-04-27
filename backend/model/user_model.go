@@ -18,6 +18,8 @@ type User struct {
 	Email    string `gorm:"uniqueIndex" json:"email" validate:"required,email"`
 	Password string `gorm:"not null" json:"-" validate:"required,min=6"`
 
+	IsPrivate bool `gorm:"default:false" json:"is_private"`
+
 	Avatar  *string `json:"avatar,omitempty" validate:"omitempty,url"`
 	AboutMe *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 

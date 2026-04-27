@@ -63,8 +63,9 @@ func (s *authService) Login(input dto.LoginInput) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+	hashRefreshToken := pkg.HashToken(refreshToken)
 
-	err = s.refreshRepo.Create(user.ID, refreshToken)
+	err = s.refreshRepo.Create(user.ID, hashRefreshToken)
 	if err != nil {
 		return "", "", err
 	}

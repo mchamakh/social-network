@@ -54,6 +54,10 @@ func (s *authService) Login(input dto.LoginInput) (string, string, error) {
 		return "", "", fmt.Errorf("invalid credentials")
 	}
 
+	if err := s.refreshRepo.DeleteByID(user.ID); err != nil {
+		return "", "", fmt.Errorf("failed to delete old refresh token %v\n", err)
+	}
+
 	accessToken, err := pkg.GenerateAcessToken(user.ID.String())
 	if err != nil {
 		return "", "", err
@@ -73,8 +77,8 @@ func (s *authService) Login(input dto.LoginInput) (string, string, error) {
 	return accessToken, refreshToken, nil
 }
 
-func (s *authService) Refresh(token string) (string, error) {
-	rt, err := s.refreshRepo.Find(token)
+func (s *authService) Refresh(refreshToken string) (string, error) {
+	rt, err := s.refreshRepo.Find(refreshToken)
 	if err != nil {
 		return "", fmt.Errorf("invalid refresh token")
 	}
@@ -82,6 +86,7 @@ func (s *authService) Refresh(token string) (string, error) {
 	return pkg.GenerateAcessToken(rt.UserID.String())
 }
 
-func (s *authService) Logout(token string) error {
-	return s.refreshRepo.Delete(token)
+func (s *authService) Logout(refreshToken string) error {
+	hashRefresh := pkg.HashToken(refreshToken)
+	return s.refreshRepo.Delete(hashRefresh)
 }

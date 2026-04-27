@@ -18,4 +18,5 @@ type RefreshTokenRepository interface {
 	Create(userID uuid.UUID, token string) error
 	Find(token string) (*RefreshToken, error)
 	Delete(token string) error
+	DeleteByID(userID uuid.UUID) error
 }

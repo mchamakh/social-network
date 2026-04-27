@@ -51,5 +51,15 @@ func (r *userRepository) GetByID(id uuid.UUID) (*model.User, error) {
 }
 
 func (r *userRepository) Delete(id uuid.UUID) error {
+	if id == uuid.Nil {
+		return fmt.Errorf("invalid uuid: nil value")
+	}
 	return r.db.Delete(&model.User{}, "id = ?", id).Error
+}
+
+func (r *userRepository) DeleteByID(userID uuid.UUID) error {
+	if userID == uuid.Nil {
+		return fmt.Errorf("invalid uuid : nil value")
+	}
+	return r.db.Where("user_id = ?", userID).Delete(&model.RefreshToken{}).Error
 }

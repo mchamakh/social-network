@@ -40,3 +40,7 @@ func (r *refreshTokenRepository) Find(token string) (*model.RefreshToken, error)
 func (r *refreshTokenRepository) Delete(token string) error {
 	return r.db.Where("token = ?", token).Delete(&model.RefreshToken{}).Error
 }
+
+func (r *refreshTokenRepository) DeleteByID(userID uuid.UUID) error {
+	return r.db.Where("user_id = ?", userID).Delete(&model.RefreshToken{}).Error
+}

@@ -78,12 +78,29 @@ func (s *authService) Login(input dto.LoginInput) (string, string, error) {
 }
 
 func (s *authService) Refresh(refreshToken string) (string, error) {
-	rt, err := s.refreshRepo.Find(refreshToken)
+
+	claims, err := pkg.ValidateRefreshToken(refreshToken)
 	if err != nil {
 		return "", fmt.Errorf("invalid refresh token")
 	}
 
-	return pkg.GenerateAcessToken(rt.UserID.String())
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		return "", fmt.Errorf("invalid refresh token")
+	}
+
+	hash := pkg.HashToken(refreshToken)
+
+	rt, err := s.refreshRepo.Find(hash)
+	if err != nil {
+		return "", fmt.Errorf("invalid refresh token")
+	}
+
+	if rt.UserID.String() != userID {
+		return "", fmt.Errorf("invalid refresh token")
+	}
+
+	return pkg.GenerateAcessToken(userID)
 }
 
 func (s *authService) Logout(refreshToken string) error {

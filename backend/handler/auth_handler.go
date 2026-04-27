@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api/dto"
 	"api/service"
 	"net/http"
 
@@ -18,7 +19,7 @@ func NewAuthHandler(service service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
-	var input service.RegisterInput
+	var input dto.RegisterInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
@@ -39,7 +40,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
-	var input service.LoginInput
+	var input dto.LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})

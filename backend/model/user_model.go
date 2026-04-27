@@ -20,7 +20,7 @@ type User struct {
 
 	IsPrivate bool `gorm:"default:false" json:"is_private"`
 
-	Avatar  *string `json:"avatar,omitempty" validate:"omitempty,url"`
+	Avatar  *string `json:"avatar,omitempty" validate:"omitempty"`
 	AboutMe *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 
 	CreatedAt time.Time `json:"created_at"`

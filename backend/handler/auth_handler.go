@@ -57,17 +57,25 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		MaxAge:   7 * 24 * 60 * 60,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	})
+
 	c.JSON(http.StatusOK, gin.H{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+		"access_token": accessToken,
 	})
 }
 
 func (h *AuthHandler) Refresh(c *gin.Context) {
-	refreshToken := c.GetHeader("x-Refresh-Token")
-
-	if refreshToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing refresh token"})
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": "missing refresh token"})
 		return
 	}
 
@@ -83,10 +91,9 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
-	refreshToken := c.GetHeader("x-Refresh-Token")
-
-	if refreshToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing refresh token"})
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": "missing refresh token"})
 		return
 	}
 
@@ -94,6 +101,16 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
 		return
 	}
+
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		MaxAge:   -1,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	})
 
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }

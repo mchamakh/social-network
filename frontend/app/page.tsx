@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div
@@ -7,12 +9,18 @@ export default function Home() {
       <nav className="flex items-center justify-between px-8 py-6">
         <img src="/logo.png" alt="logo" className="h-15 w-auto" />
         <div className="flex items-center gap-4">
-          <button className="bg-black text-white px-6 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors">
+          <Link
+            href={"/register"}
+            className="bg-black text-white px-6 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors"
+          >
             Sign up
-          </button>
-          <button className="text-black font-medium hover:opacity-70 transition-opacity">
+          </Link>
+          <Link
+            href={"/login"}
+            className="text-black font-medium hover:opacity-70 transition-opacity"
+          >
             Sign in
-          </button>
+          </Link>
         </div>
       </nav>
       <div className="flex flex-col items-center justify-center mt-48 gap-4 text-center">

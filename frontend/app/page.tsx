@@ -30,9 +30,12 @@ export default function Home() {
         <p className=" text-gray-500 text-lg">
           Connect, share, and discover people who are just like you.
         </p>
-        <button className="mt-4 bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-zinc-800 transition-colors">
+        <Link
+          href={"/register"}
+          className="mt-4 bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-zinc-800 transition-colors"
+        >
           Create your account !
-        </button>
+        </Link>
       </div>
     </div>
   );

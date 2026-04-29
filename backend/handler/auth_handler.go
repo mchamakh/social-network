@@ -15,7 +15,10 @@ type AuthHandler struct {
 }
 
 func NewAuthHandler(service service.AuthService) *AuthHandler {
-	return &AuthHandler{service: service, validate: validator.New()}
+
+	v := validator.New()
+	v.RegisterValidation("notblank", dto.NotBlank)
+	return &AuthHandler{service: service, validate: v}
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {

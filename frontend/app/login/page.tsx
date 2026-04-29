@@ -1,6 +1,31 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { loginUser } from "@/lib/api";
+import { setAccessToken } from "@/lib/auth";
 
 export default function Login() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await loginUser({ email, password });
+      setAccessToken(result.access_token);
+      router.push("/");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100 flex items-center justify-center">
       <div className="bg-white rounded-2xl flex flex-row w-335 h-180 p-4">
@@ -21,23 +46,31 @@ export default function Login() {
             <div className="flex flex-col gap-4 w-full">
               <div className="flex flex-col gap-1">
                 <label className="text-sm text-black font-medium">
-                  Email<span className="text-orange-600 text-lg">*</span>
+                  Email <span className="text-orange-600 text-lg">*</span>
                 </label>
                 <input
-                  type="text"
-                  className="border border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border text-black border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
                 <label className="text-sm text-black font-medium">
-                  Password<span className="text-orange-600 text-lg">*</span>
+                  Password <span className="text-orange-600 text-lg">*</span>
                 </label>
                 <input
                   type="password"
-                  className="border border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border text-black border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
                 />
               </div>
+
+              {error && (
+                <p className="text-red-500 text-sm text-center">{error}</p>
+              )}
 
               <Link
                 href="/register"
@@ -49,8 +82,14 @@ export default function Login() {
           </div>
 
           <div className="flex justify-center">
-            <button className="bg-black text-white px-12 py-3 rounded-full font-medium hover:bg-zinc-800 transition-colors">
-              Sign in
+            <button
+              onClick={handleSubmit}
+              disabled={
+                loading || email.trim() === "" || password.trim() === ""
+              }
+              className="bg-black text-white px-12 py-3 rounded-full font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {loading ? "Loading..." : "Sign in"}
             </button>
           </div>
         </div>

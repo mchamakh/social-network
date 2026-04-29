@@ -2,18 +2,47 @@
 import { useState } from "react";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { registerUser } from "@/lib/api";
 
 export default function Register() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [aboutMe, setAboutMe] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const canGoNext = () => {
     if (step === 1) return firstName.trim() !== "" && lastName.trim() !== "";
     if (step === 2) return email.trim() !== "" && password.trim() !== "";
     return true;
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await registerUser({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+        nickname,
+        birthday,
+        about_me: aboutMe,
+      });
+      router.push("/login");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,6 +140,8 @@ export default function Register() {
                     </label>
                     <input
                       type="text"
+                      value={nickname}
+                      onChange={(e) => setNickname(e.target.value)}
                       className="border text-black border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
                     />
                   </div>
@@ -120,6 +151,8 @@ export default function Register() {
                     </label>
                     <input
                       type="date"
+                      value={birthday}
+                      onChange={(e) => setBirthday(e.target.value)}
                       className="border text-black border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
                     />
                   </div>
@@ -133,6 +166,8 @@ export default function Register() {
                       About me
                     </label>
                     <textarea
+                      value={aboutMe}
+                      onChange={(e) => setAboutMe(e.target.value)}
                       className="border text-black border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400 resize-none"
                       rows={3}
                     />
@@ -146,6 +181,9 @@ export default function Register() {
                       className="border border-gray-200 rounded-lg px-4 py-3 w-full outline-none focus:border-gray-400"
                     />
                   </div>
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
                 </>
               )}
             </div>
@@ -172,8 +210,12 @@ export default function Register() {
             )}
 
             {step === 4 && (
-              <button className="bg-black cursor-pointer text-white px-6 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors">
-                Join us
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="bg-black cursor-pointer text-white px-6 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? "Loading..." : "Join us"}
               </button>
             )}
           </div>

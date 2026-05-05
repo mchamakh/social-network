@@ -6,16 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Handlers struct {
-}
-
 func NewRouter(c *container.Container) *gin.Engine {
-	r := gin.Default()
+    r := gin.Default()
 
-	api := r.Group("/api")
+    api := r.Group("/api")
 
-	RegisterUserRoutes(api, c.UserHandler)
-	RegisterAuthRoutes(api, c.AuthHandler)
+    RegisterUserRoutes(api, c.UserHandler)
+    RegisterAuthRoutes(api, c.AuthHandler)
+    RegisterWsRoutes(api, c.WsHub)
 
-	return r
+    return r
 }

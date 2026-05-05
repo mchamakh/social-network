@@ -3,7 +3,7 @@ import { FiBell, FiSettings, FiUsers, FiUser, FiHome } from "react-icons/fi";
 
 export default function Sidebar() {
   return (
-    <div className="flex flex-col w-48 min-h-screen bg-white px-4 py-6 pt-30 gap-8">
+    <div className="flex flex-col w-48 min-h-screen bg-white px-4 py-6 pt-45 gap-8">
       <div className="flex flex-col gap-2">
         <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest">
           Main

@@ -27,5 +27,7 @@ type FollowRepository interface {
 	Get(followerID, followingID uuid.UUID) (*Follow, error)
 	UpdateStatus(id uuid.UUID, status FollowStatus) error
 	Delete(id uuid.UUID) error
+	GetFollowers(userID uuid.UUID) ([]User, error)
+	GetFollowing(userID uuid.UUID) ([]User, error)
 	GetPendingRequests(userID uuid.UUID) ([]Follow, error)
 }

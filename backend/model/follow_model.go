@@ -21,3 +21,11 @@ type Follow struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
+
+type FollowRepository interface {
+	Create(follow *Follow) error
+	Get(followerID, followingID uuid.UUID) (*Follow, error)
+	UpdateStatus(id uuid.UUID, status FollowStatus) error
+	Delete(id uuid.UUID) error
+	GetPendingRequests(userID uuid.UUID) ([]Follow, error)
+}

@@ -6,11 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FollowRoutes(r *gin.RouterGroup, h *handler.FollowHandler) {
-	r.POST("/users/:id/follow", h.FollowUser)
-	r.DELETE("/users/:id/follow", h.UnfollowUser)
+func RegisterFollowRoutes(r *gin.RouterGroup, h *handler.FollowHandler, auth gin.HandlerFunc) {
+	users := r.Group("/users")
+	users.Use(auth)
 
-	r.GET("/me/follow-requests", h.GetPending)
-	r.POST("/follow/:id/accept", h.AcceptFollow)
-	r.POST("/follow/:id/reject", h.RejectFollow)
+	users.POST("/:id/follow", h.FollowUser)
+	users.DELETE("/:id/follow", h.UnfollowUser)
 }

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"api/container"
+	"api/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -19,9 +20,9 @@ func NewRouter(c *container.Container) *gin.Engine {
 
     api := r.Group("/api")
 
-    RegisterUserRoutes(api, c.UserHandler)
-    RegisterAuthRoutes(api, c.AuthHandler)
-    RegisterWsRoutes(api, c.WsHub)
+	RegisterUserRoutes(api, c.UserHandler)
+	RegisterAuthRoutes(api, c.AuthHandler)
+	RegisterFollowRoutes(api, c.FollowHandler, middleware.AuthMiddleware())
 
-    return r
+	return r
 }

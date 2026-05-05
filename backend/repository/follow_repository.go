@@ -2,6 +2,7 @@ package repository
 
 import (
 	"api/model"
+	"errors"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -23,6 +24,9 @@ func (r *followRepository) Get(followerID, followingID uuid.UUID) (*model.Follow
 	var follow model.Follow
 	err := r.db.Where("follower_id = ? AND following_id = ?", followerID, followingID).First(&follow).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &follow, err

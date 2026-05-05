@@ -24,7 +24,7 @@ export default function Profile() {
                 <div className="h-24 w-24 rounded-full border-4 border-white bg-gray-300 flex items-center justify-center">
                   <FiUser size={40} className="text-gray-500" />
                 </div>
-                <div className="mb-1">
+                <div className="mb">
                   <h1 className="text-xl font-bold text-black">Dempele</h1>
                   <p className="text-gray-400 text-sm">@dembouz</p>
                 </div>

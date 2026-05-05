@@ -18,7 +18,7 @@ func NewFollowHandler(s service.FollowService) *FollowHandler {
 }
 
 func (h *FollowHandler) FollowUser(c *gin.Context) {
-	userID := c.MustGet("userID").(uuid.UUID)
+	userID := c.MustGet("user_id").(uuid.UUID)
 	targetID, _ := uuid.Parse(c.Param("id"))
 
 	err := h.service.FollowUser(userID, targetID)
@@ -31,7 +31,7 @@ func (h *FollowHandler) FollowUser(c *gin.Context) {
 }
 
 func (h *FollowHandler) UnfollowUser(c *gin.Context) {
-	userID := c.MustGet("userID").(uuid.UUID)
+	userID := c.MustGet("user_id").(uuid.UUID)
 	targetID, _ := uuid.Parse(c.Param("id"))
 
 	err := h.service.UnfollowUser(userID, targetID)
@@ -68,7 +68,7 @@ func (h *FollowHandler) RejectFollow(c *gin.Context) {
 }
 
 func (h *FollowHandler) GetPending(c *gin.Context) {
-	userID := c.MustGet("userID").(uuid.UUID)
+	userID := c.MustGet("user_id").(uuid.UUID)
 
 	data, err := h.service.GetPendingRequests(userID)
 	if err != nil {

@@ -17,10 +17,11 @@ func NewRouter(c *container.Container) *gin.Engine {
 		AllowCredentials: true,
 	}))
 
-	api := r.Group("/api")
+    api := r.Group("/api")
 
-	RegisterUserRoutes(api, c.UserHandler)
-	RegisterAuthRoutes(api, c.AuthHandler)
+    RegisterUserRoutes(api, c.UserHandler)
+    RegisterAuthRoutes(api, c.AuthHandler)
+    RegisterWsRoutes(api, c.WsHub)
 
-	return r
+    return r
 }

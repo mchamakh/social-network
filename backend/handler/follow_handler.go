@@ -78,3 +78,27 @@ func (h *FollowHandler) GetPending(c *gin.Context) {
 
 	c.JSON(http.StatusOK, data)
 }
+
+func (h *FollowHandler) GetFollowers(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
+
+	users, err := h.service.GetFollowers(userID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, users)
+}
+
+func (h *FollowHandler) GetFollowing(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
+
+	users, err := h.service.GetFollowing(userID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, users)
+}

@@ -20,6 +20,30 @@ func (r *followRepository) Create(f *model.Follow) error {
 	return r.db.Create(f).Error
 }
 
+func (r *followRepository) GetFollowers(userID uuid.UUID) ([]model.User, error) {
+	var users []model.User
+
+	err := r.db.Table("follows").
+		Select("users.*").
+		Joins("JOIN users ON users.id = follows.follower_id").
+		Where("follows.following_id = ? AND follows.status = ?", userID, "accepted").
+		Find(&users).Error
+
+	return users, err
+}
+
+func (r *followRepository) GetFollowing(userID uuid.UUID) ([]model.User, error) {
+	var users []model.User
+
+	err := r.db.Table("follows").
+		Select("users.*").
+		Joins("JOIN users ON users.id = follows.following_id").
+		Where("follows.follower_id = ? AND follows.status = ?", userID, "accepted").
+		Find(&users).Error
+
+	return users, err
+}
+
 func (r *followRepository) Get(followerID, followingID uuid.UUID) (*model.Follow, error) {
 	var follow model.Follow
 	err := r.db.Where("follower_id = ? AND following_id = ?", followerID, followingID).First(&follow).Error
@@ -29,7 +53,7 @@ func (r *followRepository) Get(followerID, followingID uuid.UUID) (*model.Follow
 		}
 		return nil, err
 	}
-	return &follow, err
+	return &follow, nil
 }
 
 func (r *followRepository) UpdateStatus(id uuid.UUID, status model.FollowStatus) error {

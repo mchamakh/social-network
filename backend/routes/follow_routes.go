@@ -12,4 +12,6 @@ func RegisterFollowRoutes(r *gin.RouterGroup, h *handler.FollowHandler, auth gin
 
 	users.POST("/:id/follow", h.FollowUser)
 	users.DELETE("/:id/follow", h.UnfollowUser)
+	users.GET("/followers", h.GetFollowers)
+	users.GET("/following", h.GetFollowing)
 }

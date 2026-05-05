@@ -13,6 +13,8 @@ type FollowService interface {
 	AcceptFollow(followID uuid.UUID) error
 	RejectFollow(followID uuid.UUID) error
 	GetPendingRequests(userID uuid.UUID) ([]model.Follow, error)
+	GetFollowers(userID uuid.UUID) ([]model.User, error)
+	GetFollowing(userID uuid.UUID) ([]model.User, error)
 }
 
 type followService struct {
@@ -39,7 +41,7 @@ func (s *followService) FollowUser(followerID, targetID uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-	status := model.Pending
+	status := model.Accepted
 	if user.IsPrivate {
 		status = model.Pending
 	}
@@ -57,6 +59,9 @@ func (s *followService) UnfollowUser(followerID, targetID uuid.UUID) error {
 	if err != nil {
 		return err
 	}
+	if existing == nil {
+		return errors.New("follow not found")
+	}
 	return s.followRepo.Delete(existing.ID)
 }
 
@@ -70,4 +75,12 @@ func (s *followService) RejectFollow(followID uuid.UUID) error {
 
 func (s *followService) GetPendingRequests(userID uuid.UUID) ([]model.Follow, error) {
 	return s.followRepo.GetPendingRequests(userID)
+}
+
+func (s *followService) GetFollowers(userID uuid.UUID) ([]model.User, error) {
+	return s.followRepo.GetFollowers(userID)
+}
+
+func (s *followService) GetFollowing(userID uuid.UUID) ([]model.User, error) {
+	return s.followRepo.GetFollowing(userID)
 }

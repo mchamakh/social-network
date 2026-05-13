@@ -70,19 +70,16 @@ export default function Feed() {
     <div className="flex min-h-screen bg-gray-100">
       {/* Left sidebar */}
       <div className="sticky top-0 h-screen">
-        <img
-          src="/logo.png"
-          alt="logo"
-          className="absolute top-6 left-15 h-14 w-auto z-10"
-        />
         <Sidebar />
       </div>
 
       {/* Center column */}
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Composer */}
-        <div className="sticky top-0 z-10 bg-gray-100 pt-6 pb-4 px-6">
-          <div className="max-w-lg mx-auto bg-white rounded-2xl p-4 flex flex-col gap-3">
+        {/* Logo + Composer */}
+        <div className="sticky top-0 z-10 bg-gray-100 pt-6 pb-4 px-6 flex flex-col items-center gap-4">
+          <img src="/logo.png" alt="logo" className="h-14 w-auto" />
+
+          <div className="max-w-xl w-full mx-auto mt-22 bg-white rounded-2xl p-4 flex flex-col gap-3">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center shrink-0">
                 <FiUser size={20} className="text-gray-500" />
@@ -116,7 +113,7 @@ export default function Feed() {
         {/* Posts */}
         <div className="px-6 pb-8 flex flex-col gap-4">
           {posts.length === 0 ? (
-            <div className="max-w-lg mx-auto w-full bg-white rounded-2xl py-16 px-8 flex flex-col items-center gap-4">
+            <div className="max-w-xl w-full mx-auto bg-white rounded-2xl py-16 px-8 flex flex-col items-center gap-4">
               <div className="relative flex items-center justify-center">
                 <span className="absolute h-16 w-16 rounded-full bg-gray-100 animate-ping opacity-20" />
                 <span className="absolute h-12 w-12 rounded-full bg-gray-100 animate-ping opacity-30 [animation-delay:300ms]" />
@@ -124,9 +121,12 @@ export default function Feed() {
                   <FiFeather size={24} className="text-gray-400" />
                 </div>
               </div>
-              <p className="text-sm font-semibold text-black mt-2">Nothing to see yet</p>
+              <p className="text-sm font-semibold text-black mt-2">
+                Nothing to see yet
+              </p>
               <p className="text-xs text-gray-400 text-center max-w-xs leading-relaxed">
-                Posts from people you follow will show up here. Start by following someone!
+                Posts from people you follow will show up here. Start by
+                following someone!
               </p>
               <div className="flex gap-1.5 mt-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-gray-300 animate-pulse" />

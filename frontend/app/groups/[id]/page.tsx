@@ -44,28 +44,42 @@ export default function GroupDetail() {
 
   // TODO: fetch group info from GET /api/groups/:id
   const isCreator = true;
-  const groupTitle = "Group name";
-  const groupDescription = "Group description";
+  const groupTitle = "Paris Football Club Fans";
+  const groupDescription = "Rouge et bleu dans le sang 🔴🔵 — discussions, matchs, transferts.";
   const isMember = true;
 
   // TODO: fetch from GET /api/groups/:id/posts
-  const [posts] = useState<Post[]>([]);
+  const [posts] = useState<Post[]>([
+    { id: "1", author: "Karim B.", handle: "@kb7", date: "13/05/2026 20h10", content: "Quel match hier soir, on a tout déchiré 🔥", likes: 34, comments: 8, liked: true },
+    { id: "2", author: "Sarah M.", handle: "@sarahm", date: "12/05/2026 18h45", content: "Le nouveau transfert c'est officiel, bienvenue au club ! 🎉", likes: 72, comments: 21, liked: false },
+    { id: "3", author: "Dempele", handle: "@dembouz", date: "11/05/2026 14h00", content: "Qui vient au prochain match ? On se retrouve devant le stade à 19h.", likes: 18, comments: 5, liked: false },
+  ]);
   const [newPost, setNewPost] = useState("");
 
   // TODO: fetch from GET /api/groups/:id/events
-  const [events] = useState<Event[]>([]);
+  const [events] = useState<Event[]>([
+    { id: "1", title: "Match Day — PSG vs Lyon", description: "Venez nombreux supporter l'équipe au Parc des Princes !", datetime: "Samedi 17 mai 2026 à 21h00", going: 14, not_going: 3, my_rsvp: "going" },
+    { id: "2", title: "Watch party chez Karim", description: "Retransmission du match en déplacement, bonne ambiance garantie.", datetime: "Mercredi 21 mai 2026 à 20h45", going: 7, not_going: 1, my_rsvp: null },
+  ]);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [eventTitle, setEventTitle] = useState("");
   const [eventDesc, setEventDesc] = useState("");
   const [eventDatetime, setEventDatetime] = useState("");
 
   // TODO: fetch from GET /api/groups/:id/members
-  const [members] = useState<Member[]>([]);
+  const [members] = useState<Member[]>([
+    { id: "1", name: "Dempele", handle: "@dembouz", is_creator: true },
+    { id: "2", name: "Karim B.", handle: "@kb7", is_creator: false },
+    { id: "3", name: "Sarah M.", handle: "@sarahm", is_creator: false },
+    { id: "4", name: "Lucas R.", handle: "@lucasr", is_creator: false },
+  ]);
   const [showInvite, setShowInvite] = useState(false);
   const [inviteSearch, setInviteSearch] = useState("");
 
   // TODO: fetch from GET /api/groups/:id/requests (creator only)
-  const [requests] = useState<JoinRequest[]>([]);
+  const [requests] = useState<JoinRequest[]>([
+    { id: "1", name: "Mehdi A.", handle: "@mehdia" },
+  ]);
 
   const handlePost = () => {
     if (!newPost.trim()) return;

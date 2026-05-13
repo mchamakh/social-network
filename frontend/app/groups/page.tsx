@@ -15,7 +15,9 @@ type Group = {
 
 export default function Groups() {
   // TODO: fetch from GET /api/groups
-  const [groups] = useState<Group[]>([]);
+  const [groups] = useState<Group[]>([
+    { id: "test", title: "Paris Football Club Fans", description: "Rouge et bleu dans le sang 🔴🔵 — discussions, matchs, transferts.", members: 4, is_member: true, is_requested: false },
+  ]);
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState("");
@@ -42,7 +44,7 @@ export default function Groups() {
       </div>
 
       <div className="flex flex-col flex-1 px-8 pt-8 pb-8">
-        <div className="max-w-2xl w-full mx-auto flex flex-col gap-6">
+        <div className="max-w-3xl w-full mx-auto flex flex-col gap-6">
 
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -122,7 +124,7 @@ export default function Groups() {
             </div>
           )}
 
-          {/* Groups list */}
+          {/* Groups grid */}
           {filtered.length === 0 ? (
             <div className="bg-white rounded-2xl py-14 flex flex-col items-center gap-3 text-center px-8">
               <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
@@ -134,38 +136,60 @@ export default function Groups() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-3">
-              {filtered.map((group) => (
-                <div key={group.id} className="bg-white rounded-2xl p-4 flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
-                    <FiUsers size={20} className="text-gray-400" />
+            <div className="grid grid-cols-2 gap-4">
+              {filtered.map((group, i) => {
+                const banners = [
+                  "bg-gradient-to-br from-blue-400 to-blue-600",
+                  "bg-gradient-to-br from-rose-400 to-pink-600",
+                  "bg-gradient-to-br from-amber-400 to-orange-500",
+                  "bg-gradient-to-br from-emerald-400 to-teal-600",
+                  "bg-gradient-to-br from-violet-400 to-purple-600",
+                  "bg-gradient-to-br from-sky-400 to-cyan-600",
+                ];
+                const banner = banners[i % banners.length];
+                return (
+                  <div key={group.id} className="bg-white rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                    {/* Banner */}
+                    <div className={`${banner} h-24 flex items-center justify-center`}>
+                      <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <FiUsers size={22} className="text-white" />
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 flex flex-col gap-3 flex-1">
+                      <div>
+                        <Link href={`/groups/${group.id}`} className="text-sm font-bold text-black hover:underline line-clamp-1">
+                          {group.title}
+                        </Link>
+                        <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{group.description}</p>
+                      </div>
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                          <FiUsers size={13} />
+                          <span>{group.members} members</span>
+                        </div>
+                        {group.is_member ? (
+                          <Link
+                            href={`/groups/${group.id}`}
+                            className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full font-medium hover:bg-gray-200 transition-colors"
+                          >
+                            Open
+                          </Link>
+                        ) : group.is_requested ? (
+                          <span className="text-xs bg-gray-100 text-gray-400 px-3 py-1.5 rounded-full font-medium">
+                            Requested
+                          </span>
+                        ) : (
+                          <button className="text-xs bg-black text-white px-3 py-1.5 rounded-full font-medium hover:bg-zinc-800 transition-colors">
+                            Join
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <Link href={`/groups/${group.id}`} className="text-sm font-semibold text-black hover:underline">
-                      {group.title}
-                    </Link>
-                    <p className="text-xs text-gray-400 truncate mt-0.5">{group.description}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{group.members} members</p>
-                  </div>
-                  {group.is_member ? (
-                    <Link
-                      href={`/groups/${group.id}`}
-                      className="text-xs bg-gray-100 text-gray-500 px-4 py-1.5 rounded-full font-medium hover:bg-gray-200 transition-colors shrink-0"
-                    >
-                      Open
-                    </Link>
-                  ) : group.is_requested ? (
-                    <span className="text-xs bg-gray-100 text-gray-400 px-4 py-1.5 rounded-full font-medium shrink-0">
-                      Requested
-                    </span>
-                  ) : (
-                    <button className="text-xs bg-black text-white px-4 py-1.5 rounded-full font-medium hover:bg-zinc-800 transition-colors shrink-0">
-                      {/* TODO: call POST /api/groups/:id/request */}
-                      Request to join
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 

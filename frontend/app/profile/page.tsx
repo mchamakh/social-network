@@ -1,6 +1,13 @@
 "use client";
 import Sidebar from "@/components/Sidebar";
-import { FiUser, FiMessageCircle, FiHeart, FiEdit, FiSend, FiImage } from "react-icons/fi";
+import {
+  FiUser,
+  FiMessageCircle,
+  FiHeart,
+  FiEdit,
+  FiSend,
+  FiImage,
+} from "react-icons/fi";
 import { useState } from "react";
 
 type Post = {
@@ -44,9 +51,8 @@ export default function Profile() {
       </div>
 
       <div className="flex flex-col flex-1 px-3 pt-0">
-
         {/* Banner + info */}
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <div className="w-full h-48 bg-gray-300 rounded-b-2xl" />
 
           <div className="flex flex-col px-8">
@@ -54,7 +60,11 @@ export default function Profile() {
               <div className="flex items-end gap-4">
                 <div className="h-24 w-24 rounded-full border-4 border-white bg-gray-300 flex items-center justify-center shrink-0">
                   {user.avatar ? (
-                    <img src={user.avatar} alt="avatar" className="w-full h-full rounded-full object-cover" />
+                    <img
+                      src={user.avatar}
+                      alt="avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
                   ) : (
                     <FiUser size={40} className="text-gray-500" />
                   )}
@@ -143,7 +153,10 @@ export default function Profile() {
               </div>
             ) : (
               posts.map((post) => (
-                <div key={post.id} className="bg-white rounded-2xl p-4 flex flex-col gap-3">
+                <div
+                  key={post.id}
+                  className="bg-white rounded-2xl p-4 flex flex-col gap-3"
+                >
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center shrink-0">
                       <FiUser size={20} className="text-gray-500" />
@@ -159,12 +172,21 @@ export default function Profile() {
                   <p className="text-sm text-black">{post.content}</p>
 
                   {post.image_url && (
-                    <img src={post.image_url} alt="" className="w-full rounded-xl object-cover max-h-64" />
+                    <img
+                      src={post.image_url}
+                      alt=""
+                      className="w-full rounded-xl object-cover max-h-64"
+                    />
                   )}
 
                   <div className="flex items-center gap-5 text-gray-400 text-sm mt-1">
-                    <button className={`flex items-center gap-1.5 transition-colors ${post.liked ? "text-red-500" : "hover:text-red-400"}`}>
-                      <FiHeart size={17} fill={post.liked ? "currentColor" : "none"} />
+                    <button
+                      className={`flex items-center gap-1.5 transition-colors ${post.liked ? "text-red-500" : "hover:text-red-400"}`}
+                    >
+                      <FiHeart
+                        size={17}
+                        fill={post.liked ? "currentColor" : "none"}
+                      />
                       <span>{post.likes}</span>
                     </button>
                     <button className="flex items-center gap-1.5 hover:text-black transition-colors">
@@ -177,7 +199,6 @@ export default function Profile() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

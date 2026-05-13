@@ -8,6 +8,7 @@ import {
   FiImage,
   FiSend,
   FiBell,
+  FiFeather,
 } from "react-icons/fi";
 import { useState } from "react";
 
@@ -91,7 +92,7 @@ export default function Feed() {
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handlePost()}
-                placeholder="Quelle est ta pensée du jour ?"
+                placeholder="What's on your mind?"
                 className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm text-black outline-none placeholder-gray-400"
               />
             </div>
@@ -106,7 +107,7 @@ export default function Feed() {
                 className="flex items-center gap-2 bg-black text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <FiSend size={14} />
-                Publier
+                Post
               </button>
             </div>
           </div>
@@ -115,8 +116,23 @@ export default function Feed() {
         {/* Posts */}
         <div className="px-6 pb-8 flex flex-col gap-4">
           {posts.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center text-gray-400 text-sm">
-              Aucune publication pour l'instant.
+            <div className="max-w-lg mx-auto w-full bg-white rounded-2xl py-16 px-8 flex flex-col items-center gap-4">
+              <div className="relative flex items-center justify-center">
+                <span className="absolute h-16 w-16 rounded-full bg-gray-100 animate-ping opacity-20" />
+                <span className="absolute h-12 w-12 rounded-full bg-gray-100 animate-ping opacity-30 [animation-delay:300ms]" />
+                <div className="relative h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center animate-bounce">
+                  <FiFeather size={24} className="text-gray-400" />
+                </div>
+              </div>
+              <p className="text-sm font-semibold text-black mt-2">Nothing to see yet</p>
+              <p className="text-xs text-gray-400 text-center max-w-xs leading-relaxed">
+                Posts from people you follow will show up here. Start by following someone!
+              </p>
+              <div className="flex gap-1.5 mt-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-gray-300 animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-gray-300 animate-pulse [animation-delay:150ms]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-gray-300 animate-pulse [animation-delay:300ms]" />
+              </div>
             </div>
           ) : (
             posts.map((post) => (
@@ -185,12 +201,12 @@ export default function Feed() {
               href="/notifications"
               className="text-xs text-gray-400 hover:text-black transition-colors"
             >
-              Voir tout
+              See all
             </Link>
           </div>
           {notifications.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-3">
-              Aucune notification.
+              No notifications yet.
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
@@ -224,12 +240,12 @@ export default function Feed() {
               href="/messages"
               className="text-xs text-gray-400 hover:text-black transition-colors"
             >
-              Voir tout
+              See all
             </Link>
           </div>
           {conversations.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-3">
-              Aucune conversation.
+              No conversations yet.
             </p>
           ) : (
             <ul className="flex flex-col gap-1">

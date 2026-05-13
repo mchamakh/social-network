@@ -5,16 +5,9 @@ import { FiBell, FiSettings, FiUsers, FiUser, FiHome } from "react-icons/fi";
 export default function Sidebar() {
   return (
     <div className="flex flex-col w-48 min-h-screen bg-white px-4 py-6 gap-8">
-
-      {/* User card */}
-      <div className="flex items-center gap-3 px-2 pt-2">
-        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-          <FiUser size={18} className="text-gray-500" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-black truncate">Username</p>
-          <p className="text-xs text-gray-400 truncate">@handle</p>
-        </div>
+      {/* Logo */}
+      <div className="flex items-center justify-center pt-2">
+        <img src="/logo.png" alt="logo" className="h-12 w-auto" />
       </div>
 
       <div className="flex flex-col gap-2">

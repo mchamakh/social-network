@@ -79,7 +79,7 @@ export default function Feed() {
         <div className="sticky top-0 z-10 bg-gray-100 pt-6 pb-4 px-6 flex flex-col items-center gap-4">
           <img src="/logo.png" alt="logo" className="h-14 w-auto" />
 
-          <div className="max-w-xl w-full mx-auto mt-22 bg-white rounded-2xl p-4 flex flex-col gap-3">
+          <div className="max-w-3xl w-full mx-auto mt-22 bg-white rounded-2xl p-4 flex flex-col gap-3">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center shrink-0">
                 <FiUser size={20} className="text-gray-500" />
@@ -113,7 +113,7 @@ export default function Feed() {
         {/* Posts */}
         <div className="px-6 pb-8 flex flex-col gap-4">
           {posts.length === 0 ? (
-            <div className="max-w-xl w-full mx-auto bg-white rounded-2xl py-16 px-8 flex flex-col items-center gap-4">
+            <div className="max-w-3xl w-full mx-auto bg-white rounded-2xl py-16 px-8 flex flex-col items-center gap-4">
               <div className="relative flex items-center justify-center">
                 <span className="absolute h-16 w-16 rounded-full bg-gray-100 animate-ping opacity-20" />
                 <span className="absolute h-12 w-12 rounded-full bg-gray-100 animate-ping opacity-30 [animation-delay:300ms]" />

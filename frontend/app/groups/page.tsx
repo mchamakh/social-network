@@ -40,11 +40,14 @@ export default function Groups() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="sticky top-0 h-screen">
-        <Sidebar />
+        <Sidebar username="User" />
       </div>
 
       <div className="flex flex-col flex-1 px-8 pt-8 pb-8">
         <div className="max-w-3xl w-full mx-auto flex flex-col gap-6">
+          <div className="flex justify-center mb-2">
+            <img src="/logo.png" alt="logo" className="h-12 w-auto" />
+          </div>
 
           {/* Header */}
           <div className="flex items-center justify-between">

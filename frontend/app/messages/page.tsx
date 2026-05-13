@@ -37,12 +37,13 @@ export default function Messages() {
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Left sidebar */}
       <div className="sticky top-0 h-screen">
-        <Sidebar />
+        <Sidebar username="User" />
       </div>
 
       {/* Conversations list */}
       <div className="w-72 shrink-0 bg-white flex flex-col border-r border-gray-100">
-        <div className="px-5 py-5 border-b border-gray-100">
+        <div className="flex flex-col items-center pt-5 pb-3 border-b border-gray-100 gap-3">
+          <img src="/logo.png" alt="logo" className="h-10 w-auto" />
           <h1 className="text-lg font-bold text-black">Messages</h1>
         </div>
 

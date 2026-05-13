@@ -1,13 +1,29 @@
+"use client";
 import Link from "next/link";
-import { FiBell, FiSettings, FiUsers, FiUser, FiHome } from "react-icons/fi";
+import { useRouter } from "next/navigation";
+import { FiBell, FiSettings, FiUsers, FiUser, FiHome, FiLogOut } from "react-icons/fi";
 
-// TODO: receive user prop from parent once auth is connected
-export default function Sidebar() {
+type Props = {
+  username?: string;
+};
+
+export default function Sidebar({ username = "User" }: Props) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push("/");
+  };
+
   return (
     <div className="flex flex-col w-48 min-h-screen bg-white px-4 py-6 gap-8">
-      {/* Logo */}
-      <div className="flex items-center justify-center pt-2">
-        <img src="/logo.png" alt="logo" className="h-12 w-auto" />
+      {/* User */}
+      <div className="flex items-center gap-3 pt-2 px-1">
+        <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-gray-500">
+            {username.charAt(0).toUpperCase()}
+          </span>
+        </div>
+        <p className="text-sm font-semibold text-black truncate">{username}</p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -59,6 +75,12 @@ export default function Sidebar() {
             <span className="text-sm font-medium">Settings</span>
           </Link>
         </nav>
+      </div>
+      <div className="mt-auto">
+        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors w-full">
+          <FiLogOut size={18} />
+          <span className="text-sm font-medium">Log out</span>
+        </button>
       </div>
     </div>
   );

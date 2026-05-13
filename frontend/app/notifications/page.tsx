@@ -27,17 +27,15 @@ export default function Notifications() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <div className="relative top-0 h-screen">
-        <img
-          src="/logo.png"
-          alt="logo"
-          className="absolute top-6 left-15 h-14 w-auto z-10"
-        />
-        <Sidebar />
+      <div className="sticky top-0 h-screen">
+        <Sidebar username="User" />
       </div>
 
       <div className="flex flex-col flex-1 px-8 pt-8 pb-8">
         <div className="max-w-xl w-full mx-auto flex flex-col gap-6">
+          <div className="flex justify-center mb-2">
+            <img src="/logo.png" alt="logo" className="h-12 w-auto" />
+          </div>
           {/* Header */}
           <div className="flex items-center gap-3">
             <FiBell size={20} className="text-black" />

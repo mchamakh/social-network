@@ -70,7 +70,7 @@ export default function Feed() {
     <div className="flex min-h-screen bg-gray-100">
       {/* Left sidebar */}
       <div className="sticky top-0 h-screen">
-        <Sidebar />
+        <Sidebar username="User" />
       </div>
 
       {/* Center column */}

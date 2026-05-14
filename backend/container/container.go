@@ -10,27 +10,27 @@ import (
 )
 
 type Container struct {
-	UserHandler   *handler.UserHandler
-	AuthHandler   *handler.AuthHandler
-	FollowHandler *handler.FollowHandler
+    UserHandler *handler.UserHandler
+    AuthHandler *handler.AuthHandler
+    WsHub       *ws.Hub
 }
 
 func NewContainer(db *gorm.DB) *Container {
-	userRepo := repository.NewUserRepository(db)
-	refreshRepo := repository.NewRefreshTokenRepository(db)
-	followRepo := repository.NewFollowRepository(db)
+    userRepo := repository.NewUserRepository(db)
+    refreshRepo := repository.NewRefreshTokenRepository(db)
 
-	userService := service.NewUserService(userRepo)
-	authService := service.NewAuthService(userService, refreshRepo)
-	followService := service.NewFollowService(followRepo, userRepo)
+    userService := service.NewUserService(userRepo)
+    authService := service.NewAuthService(userService, refreshRepo)
 
-	userHandler := handler.NewUserHandler(userService)
-	authHandler := handler.NewAuthHandler(authService)
-	followHandler := handler.NewFollowHandler(followService)
+    userHandler := handler.NewUserHandler(userService)
+    authHandler := handler.NewAuthHandler(authService)
 
-	return &Container{
-		UserHandler:   userHandler,
-		AuthHandler:   authHandler,
-		FollowHandler: followHandler,
-	}
+    hub := ws.NewHub()
+    go hub.Run()
+
+    return &Container{
+        UserHandler: userHandler,
+        AuthHandler: authHandler,
+        WsHub:       hub,
+    }
 }

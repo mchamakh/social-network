@@ -15,17 +15,7 @@ export default function Sidebar({ username = "User" }: Props) {
   };
 
   return (
-    <div className="flex flex-col w-48 min-h-screen bg-white px-4 py-6 gap-8">
-      {/* User */}
-      <div className="flex items-center gap-3 pt-2 px-1">
-        <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-          <span className="text-xs font-semibold text-gray-500">
-            {username.charAt(0).toUpperCase()}
-          </span>
-        </div>
-        <p className="text-sm font-semibold text-black truncate">{username}</p>
-      </div>
-
+    <div className="flex flex-col w-48 min-h-screen bg-white px-4 py-6 pt-45 gap-8">
       <div className="flex flex-col gap-2">
         <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest">
           Main

@@ -2,6 +2,7 @@
 import Sidebar from "@/components/Sidebar";
 import { FiBell, FiHeart, FiUserPlus, FiMessageCircle } from "react-icons/fi";
 import { useState } from "react";
+import Image from "next/image";
 
 type NotificationType = "like" | "follow" | "comment";
 
@@ -34,7 +35,7 @@ export default function Notifications() {
       <div className="flex flex-col flex-1 px-8 pt-8 pb-8">
         <div className="max-w-xl w-full mx-auto flex flex-col gap-6">
           <div className="flex justify-center mb-2">
-            <img src="/logo.png" alt="logo" className="h-12 w-auto" />
+            <Image src="/logo.png" alt="logo" className="h-12 w-auto" />
           </div>
           {/* Header */}
           <div className="flex items-center gap-3">
@@ -56,7 +57,7 @@ export default function Notifications() {
               <p className="text-sm font-semibold text-black">All caught up</p>
               <p className="text-xs text-gray-400 leading-relaxed max-w-xs">
                 You have no notifications yet. When someone likes, comments or
-                follows you, it'll show up here.
+                follows you, it&apos;ll show up here.
               </p>
             </div>
           ) : (

@@ -23,6 +23,7 @@ func NewRouter(c *container.Container) *gin.Engine {
 	RegisterAuthRoutes(api, c.AuthHandler)
 	RegisterPostRoutes(api, c.PostHandler)
 	RegisterCommentRoutes(api, c.CommentHandler)
+	RegisterReactionRoutes(api, c.ReactionHandler)
 	RegisterWsRoutes(api, c.WsHub)
 
     return r

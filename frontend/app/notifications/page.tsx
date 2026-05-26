@@ -35,8 +35,13 @@ export default function Notifications() {
       <div className="flex flex-col flex-1 px-8 pt-8 pb-8">
         <div className="max-w-xl w-full mx-auto flex flex-col gap-6">
           <div className="flex justify-center mb-2">
-            <Image src="/logo.png" alt="logo" className="h-12 w-auto" />
-          </div>
+            <Image
+              src="/logo.png"
+              alt="logo"
+              width={48}
+              height={48}
+              className="h-12 w-auto"
+            />          </div>
           {/* Header */}
           <div className="flex items-center gap-3">
             <FiBell size={20} className="text-black" />
@@ -65,9 +70,8 @@ export default function Notifications() {
               {notifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className={`flex items-start gap-4 px-4 py-3 rounded-2xl transition-colors ${
-                    notif.read ? "bg-white" : "bg-white border-l-4 border-black"
-                  }`}
+                  className={`flex items-start gap-4 px-4 py-3 rounded-2xl transition-colors ${notif.read ? "bg-white" : "bg-white border-l-4 border-black"
+                    }`}
                 >
                   <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0 mt-0.5">
                     {ICONS[notif.type]}

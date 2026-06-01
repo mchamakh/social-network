@@ -22,7 +22,7 @@ func (r *postRepository) Create(post *model.Post) error {
 
 func (r *postRepository) GetAll() ([]model.Post, error) {
 	var posts []model.Post
-	err := r.db.Order("created_at DESC").Find(&posts).Error
+	err := r.db.Preload("Author").Order("created_at DESC").Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *postRepository) GetByID(id uuid.UUID) (*model.Post, error) {
 		return nil, fmt.Errorf("invalid uuid: nil value")
 	}
 	var post model.Post
-	err := r.db.First(&post, "id = ?", id).Error
+	err := r.db.Preload("Author").First(&post, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (r *postRepository) GetByAuthorID(authorID uuid.UUID) ([]model.Post, error)
 		return nil, fmt.Errorf("invalid uuid: nil value")
 	}
 	var posts []model.Post
-	err := r.db.Where("author_id = ?", authorID).Order("created_at DESC").Find(&posts).Error
+	err := r.db.Preload("Author").Where("author_id = ?", authorID).Order("created_at DESC").Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}

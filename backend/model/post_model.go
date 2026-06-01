@@ -9,6 +9,7 @@ import (
 type Post struct {
 	ID       uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
 	AuthorID uuid.UUID `gorm:"type:uuid;not null" json:"author_id"`
+	Author   User      `gorm:"foreignKey:AuthorID" json:"author"`
 
 	Content  string  `gorm:"not null" json:"content" validate:"required,min=1"`
 	ImageURL *string `json:"image_url,omitempty"`

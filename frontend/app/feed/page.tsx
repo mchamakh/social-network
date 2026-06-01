@@ -9,8 +9,28 @@ import {
   FiSend,
   FiBell,
   FiFeather,
+  FiThumbsDown,
+  FiTrash2,
 } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getPosts, createPost, deletePost } from "@/lib/api";
+
+type Author = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  nickname?: string;
+  avatar?: string;
+};
+
+type Post = {
+  id: string;
+  author_id: string;
+  author: Author;
+  content: string;
+  image_url?: string;
+  created_at: string;
+};
 
 type Notification = {
   id: string;
@@ -26,44 +46,49 @@ type Conversation = {
   date: string;
 };
 
-type Post = {
-  id: string;
-  author: string;
-  handle: string;
-  date: string;
-  content: string;
-  image_url?: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-};
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default function Feed() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
-  // TODO: fetch from GET /api/notifications
+  const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
   const [notifications] = useState<Notification[]>([]);
-  // TODO: fetch from GET /api/messages/conversations
   const [conversations] = useState<Conversation[]>([]);
 
-  const toggleLike = (id: string) => {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              liked: !p.liked,
-              likes: p.liked ? p.likes - 1 : p.likes + 1,
-            }
-          : p,
-      ),
-    );
+  useEffect(() => {
+    getPosts()
+      .then(setPosts)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handlePost = async () => {
+    if (!newPost.trim() || posting) return;
+    setPosting(true);
+    try {
+      const post = await createPost({ content: newPost.trim() });
+      setPosts((prev) => [post, ...prev]);
+      setNewPost("");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setPosting(false);
+    }
   };
 
-  const handlePost = () => {
-    if (!newPost.trim()) return;
-    // TODO: call POST /api/posts
-    setNewPost("");
+  const handleDelete = async (id: string) => {
+    try {
+      await deletePost(id);
+      setPosts((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -100,11 +125,11 @@ export default function Feed() {
               </button>
               <button
                 onClick={handlePost}
-                disabled={!newPost.trim()}
+                disabled={!newPost.trim() || posting}
                 className="flex items-center gap-2 bg-black text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <FiSend size={14} />
-                Post
+                {posting ? "Posting..." : "Post"}
               </button>
             </div>
           </div>
@@ -112,7 +137,11 @@ export default function Feed() {
 
         {/* Posts */}
         <div className="px-6 pb-8 flex flex-col gap-4">
-          {posts.length === 0 ? (
+          {loading ? (
+            <div className="max-w-xl w-full mx-auto py-16 flex justify-center">
+              <span className="text-sm text-gray-400">Loading posts...</span>
+            </div>
+          ) : posts.length === 0 ? (
             <div className="max-w-xl w-full mx-auto bg-white rounded-2xl py-16 px-8 flex flex-col items-center gap-4">
               <div className="relative flex items-center justify-center">
                 <span className="absolute h-16 w-16 rounded-full bg-gray-100 animate-ping opacity-20" />
@@ -138,20 +167,39 @@ export default function Feed() {
             posts.map((post) => (
               <div
                 key={post.id}
-                className="bg-white rounded-2xl p-4 flex flex-col gap-3"
+                className="max-w-xl w-full mx-auto bg-white rounded-2xl p-4 flex flex-col gap-3"
               >
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center shrink-0">
-                    <FiUser size={20} className="text-gray-500" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center shrink-0">
+                      {post.author.avatar ? (
+                        <img
+                          src={post.author.avatar}
+                          alt=""
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <FiUser size={20} className="text-gray-500" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-black">
+                        {post.author.first_name} {post.author.last_name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {post.author.nickname
+                          ? `@${post.author.nickname} · `
+                          : ""}
+                        {formatDate(post.created_at)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-black">
-                      {post.author}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {post.handle} · {post.date}
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => handleDelete(post.id)}
+                    className="text-gray-300 hover:text-red-400 transition-colors"
+                  >
+                    <FiTrash2 size={15} />
+                  </button>
                 </div>
 
                 <p className="text-sm text-black">{post.content}</p>
@@ -165,21 +213,14 @@ export default function Feed() {
                 )}
 
                 <div className="flex items-center gap-5 text-gray-400 text-sm mt-1">
-                  <button
-                    onClick={() => toggleLike(post.id)}
-                    className={`flex items-center gap-1.5 transition-colors ${
-                      post.liked ? "text-red-500" : "hover:text-red-400"
-                    }`}
-                  >
-                    <FiHeart
-                      size={17}
-                      fill={post.liked ? "currentColor" : "none"}
-                    />
-                    <span>{post.likes}</span>
+                  <button className="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+                    <FiHeart size={17} />
+                  </button>
+                  <button className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
+                    <FiThumbsDown size={17} />
                   </button>
                   <button className="flex items-center gap-1.5 hover:text-black transition-colors">
                     <FiMessageCircle size={17} />
-                    <span>{post.comments}</span>
                   </button>
                 </div>
               </div>
@@ -220,9 +261,7 @@ export default function Feed() {
                   }`}
                 >
                   <span>{notif.text}</span>
-                  <span className="text-gray-400 font-normal">
-                    {notif.date}
-                  </span>
+                  <span className="text-gray-400 font-normal">{notif.date}</span>
                 </li>
               ))}
             </ul>

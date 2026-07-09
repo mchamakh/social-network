@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api/dto"
 	"api/service"
 	"errors"
 	"net/http"
@@ -11,7 +12,8 @@ import (
 )
 
 type UserHandler struct {
-	service service.UserService
+	service       service.UserService
+	followService service.FollowService
 }
 
 type CreateUserInput struct {
@@ -26,8 +28,8 @@ type CreateUserInput struct {
 	AboutMe  *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 }
 
-func NewUserHandler(service service.UserService) *UserHandler {
-	return &UserHandler{service: service}
+func NewUserHandler(service service.UserService, followService service.FollowService) *UserHandler {
+	return &UserHandler{service: service, followService: followService}
 }
 
 func (h *UserHandler) GetAll(c *gin.Context) {
@@ -55,6 +57,8 @@ func (h *UserHandler) GetByEmail(c *gin.Context) {
 }
 
 func (h *UserHandler) GetByID(c *gin.Context) {
+	viewerID := c.MustGet("user_id").(uuid.UUID)
+
 	idParam := c.Param("id")
 	if idParam == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": "missing user id"})
@@ -68,6 +72,48 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	user, err := h.service.GetByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": "error", "error": "user not found"})
+		return
+	}
+
+	canView, err := h.followService.CanViewProfile(viewerID, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": err.Error()})
+		return
+	}
+	if !canView {
+		// Private account and the viewer isn't an accepted follower: only
+		// expose the identity fields needed to render a follow button.
+		user.Email = ""
+		user.Birthday = ""
+		user.AboutMe = nil
+		user.Banner = nil
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "data": user})
+}
+
+func (h *UserHandler) GetMe(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
+	user, err := h.service.GetByID(userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": "error", "error": "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "data": user})
+}
+
+func (h *UserHandler) UpdateMe(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
+
+	var input dto.UpdateProfileInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": "invalid JSON"})
+		return
+	}
+
+	user, err := h.service.UpdateProfile(userID, input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "data": user})

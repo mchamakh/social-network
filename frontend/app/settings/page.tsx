@@ -1,23 +1,85 @@
 "use client";
 import Sidebar from "@/components/Sidebar";
-import { FiUser, FiLock, FiEye, FiTrash2, FiCamera } from "react-icons/fi";
-import { useState } from "react";
+import ImageUploadButton from "@/components/ImageUploadButton";
+import { FiUser, FiLock, FiEye, FiTrash2, FiCamera, FiImage } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { updateProfile, resolveImageUrl } from "@/lib/api";
 
 export default function Settings() {
-  // TODO: fetch current user from GET /api/users/me
+  const { user, loading, setUser } = useAuth();
+  const router = useRouter();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [nickname, setNickname] = useState("");
   const [birthday, setBirthday] = useState("");
   const [aboutMe, setAboutMe] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSaveProfile = () => {
-    // TODO: call PUT /api/users/me
+  useEffect(() => {
+    if (!loading && !user) router.push("/login");
+  }, [loading, user, router]);
+
+  useEffect(() => {
+    if (!user) return;
+    setFirstName(user.first_name);
+    setLastName(user.last_name);
+    setNickname(user.nickname ?? "");
+    setBirthday(user.birthday?.slice(0, 10) ?? "");
+    setAboutMe(user.about_me ?? "");
+    setIsPrivate(user.is_private);
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      const updated = await updateProfile({
+        first_name: firstName,
+        last_name: lastName,
+        nickname: nickname || undefined,
+        birthday: birthday || undefined,
+        about_me: aboutMe || undefined,
+      });
+      setUser({ ...updated, is_private: updated.is_private } as typeof user);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {} finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAvatarUploaded = async (url: string) => {
+    try {
+      const updated = await updateProfile({ avatar: url });
+      setUser({ ...updated } as typeof user);
+    } catch {}
+  };
+
+  const handleBannerUploaded = async (url: string) => {
+    try {
+      const updated = await updateProfile({ banner: url });
+      setUser({ ...updated } as typeof user);
+    } catch {}
+  };
+
+  const handleTogglePrivate = async () => {
+    const next = !isPrivate;
+    setIsPrivate(next);
+    try {
+      const updated = await updateProfile({ is_private: next });
+      setUser({ ...updated } as typeof user);
+    } catch {
+      setIsPrivate(!next);
+    }
   };
 
   const handleChangePassword = () => {
@@ -32,10 +94,12 @@ export default function Settings() {
     // TODO: call DELETE /api/users/me with confirmation
   };
 
+  if (loading || !user) return null;
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="sticky top-0 h-screen">
-        <Sidebar username="User" />
+        <Sidebar />
       </div>
 
       <div className="flex flex-col flex-1 px-8 pt-8 pb-8">
@@ -53,17 +117,45 @@ export default function Settings() {
               Profile picture
             </p>
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-                <FiUser size={26} className="text-gray-400" />
+              <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+                {user.avatar ? (
+                  <img src={resolveImageUrl(user.avatar)} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <FiUser size={26} className="text-gray-400" />
+                )}
               </div>
               <div className="flex flex-col gap-2">
-                <label className="cursor-pointer bg-black text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors w-fit">
+                <ImageUploadButton
+                  onUploaded={handleAvatarUploaded}
+                  className="cursor-pointer bg-black text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors w-fit disabled:opacity-40"
+                >
                   Upload photo
-                  <input type="file" accept="image/*" className="hidden" />
-                  {/* TODO: call PUT /api/users/me/avatar */}
-                </label>
-                <p className="text-xs text-gray-400">JPG or PNG, max 2MB.</p>
+                </ImageUploadButton>
+                <p className="text-xs text-gray-400">JPEG, PNG or GIF, max 10MB.</p>
               </div>
+            </div>
+          </div>
+
+          {/* Banner */}
+          <div className="bg-white rounded-2xl p-5 flex flex-col gap-4">
+            <p className="text-sm font-semibold text-black flex items-center gap-2">
+              <FiImage size={16} />
+              Banner
+            </p>
+            <div className="flex flex-col gap-3">
+              <div className="w-full h-28 rounded-xl bg-gray-200 overflow-hidden flex items-center justify-center">
+                {user.banner ? (
+                  <img src={resolveImageUrl(user.banner)} alt="banner" className="w-full h-full object-cover" />
+                ) : (
+                  <FiImage size={22} className="text-gray-400" />
+                )}
+              </div>
+              <ImageUploadButton
+                onUploaded={handleBannerUploaded}
+                className="cursor-pointer bg-black text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-zinc-800 transition-colors w-fit disabled:opacity-40"
+              >
+                Upload banner
+              </ImageUploadButton>
             </div>
           </div>
 
@@ -124,12 +216,14 @@ export default function Settings() {
               />
               <p className="text-xs text-gray-400 text-right">{aboutMe.length}/200</p>
             </div>
-            <div className="flex justify-end">
+            <div className="flex items-center justify-end gap-3">
+              {saved && <p className="text-xs text-green-600">Saved!</p>}
               <button
                 onClick={handleSaveProfile}
-                className="bg-black text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 transition-colors"
+                disabled={saving}
+                className="bg-black text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Save changes
+                {saving ? "Saving..." : "Save changes"}
               </button>
             </div>
           </div>
@@ -146,7 +240,7 @@ export default function Settings() {
                 <p className="text-xs text-gray-400 mt-0.5">Only your followers can see your posts.</p>
               </div>
               <button
-                onClick={() => setIsPrivate(!isPrivate)}
+                onClick={handleTogglePrivate}
                 className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
                   isPrivate ? "bg-black" : "bg-gray-200"
                 }`}

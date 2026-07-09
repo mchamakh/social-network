@@ -56,6 +56,18 @@ func (r *followRepository) Get(followerID, followingID uuid.UUID) (*model.Follow
 	return &follow, nil
 }
 
+func (r *followRepository) GetByID(id uuid.UUID) (*model.Follow, error) {
+	var follow model.Follow
+	err := r.db.Where("id = ?", id).First(&follow).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &follow, nil
+}
+
 func (r *followRepository) UpdateStatus(id uuid.UUID, status model.FollowStatus) error {
 	return r.db.Model(&model.Follow{}).Where("id = ?", id).Update("status", status).Error
 }
@@ -64,9 +76,14 @@ func (r *followRepository) Delete(id uuid.UUID) error {
 	return r.db.Delete(&model.Follow{}, "id = ?", id).Error
 }
 
-func (r *followRepository) GetPendingRequests(userID uuid.UUID) ([]model.Follow, error) {
-	var follows []model.Follow
-	err := r.db.Where("following_id = ? AND status = ?", userID, "pending").Find(&follows).Error
+func (r *followRepository) GetPendingRequests(userID uuid.UUID) ([]model.FollowRequestPreview, error) {
+	var previews []model.FollowRequestPreview
 
-	return follows, err
+	err := r.db.Table("follows").
+		Select("follows.id AS follow_id, follows.follower_id, follows.created_at, users.first_name, users.last_name, users.nick_name, users.avatar").
+		Joins("JOIN users ON users.id = follows.follower_id").
+		Where("follows.following_id = ? AND follows.status = ?", userID, "pending").
+		Scan(&previews).Error
+
+	return previews, err
 }

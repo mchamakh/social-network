@@ -21,6 +21,7 @@ type User struct {
 	IsPrivate bool `gorm:"default:false" json:"is_private"`
 
 	Avatar  *string `json:"avatar,omitempty" validate:"omitempty"`
+	Banner  *string `json:"banner,omitempty" validate:"omitempty"`
 	AboutMe *string `json:"about_me,omitempty" validate:"omitempty,max=200"`
 
 	CreatedAt time.Time `json:"created_at"`
@@ -32,5 +33,6 @@ type UserRepository interface {
 	GetAll() ([]User, error)
 	GetByEmail(email string) (*User, error)
 	GetByID(id uuid.UUID) (*User, error)
+	Update(user *User) error
 	Delete(id uuid.UUID) error
 }

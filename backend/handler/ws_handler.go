@@ -4,50 +4,75 @@ import (
 	"log"
 	"net/http"
 
+	"api/pkg"
+	"api/service"
 	ws "api/websocket"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
-    CheckOrigin: func(r *http.Request) bool {
-        return true
-    },
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
-func WsHandler(hub *ws.Hub) gin.HandlerFunc {
-    return func(c *gin.Context) {
-        // On utilise "user_id" — exactement comme dans ton middleware
-        // et on cast en string car c'est ce que ton middleware stocke
-        userIDVal, exists := c.Get("user_id")
-        if !exists {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "non autorisé"})
-            return
-        }
-        userID := userIDVal.(string)
+func WsHandler(hub *ws.Hub, groupService service.GroupService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var userID string
 
-        groups := []int{}
+		// Try auth middleware context first, then fall back to query param token
+		if val, exists := c.Get("user_id"); exists {
+			userID = val.(uuid.UUID).String()
+		} else {
+			token := c.Query("token")
+			if token == "" {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+				return
+			}
+			claims, err := pkg.ValidateAccessToken(token)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+				return
+			}
+			id, ok := claims["user_id"].(string)
+			if !ok {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+				return
+			}
+			userID = id
+		}
 
-        conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-        if err != nil {
-            log.Printf("erreur upgrade websocket: %v", err)
-            return
-        }
+		var groups []string
+		if uid, err := uuid.Parse(userID); err == nil {
+			if groupIDs, err := groupService.GetUserGroupIDs(uid); err == nil {
+				for _, gid := range groupIDs {
+					groups = append(groups, gid.String())
+				}
+			}
+		}
 
-        client := &ws.Client{
-            UserID: userID,
-            Conn:   conn,
-            Send:   make(chan ws.Message, 256),
-            Groups: groups,
-            Hub:    hub,
-        }
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			log.Printf("websocket upgrade error: %v", err)
+			return
+		}
 
-        hub.Register <- client
+		client := &ws.Client{
+			UserID: userID,
+			Conn:   conn,
+			Send:   make(chan ws.Message, 256),
+			Groups: groups,
+			Hub:    hub,
+		}
 
-        go client.WritePump()
-        go client.ReadPump()
-    }
+		hub.Register <- client
+
+		go client.WritePump()
+		go client.ReadPump()
+	}
 }

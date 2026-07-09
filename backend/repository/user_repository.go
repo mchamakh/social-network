@@ -50,6 +50,10 @@ func (r *userRepository) GetByID(id uuid.UUID) (*model.User, error) {
 	return &user, nil
 }
 
+func (r *userRepository) Update(user *model.User) error {
+	return r.db.Save(user).Error
+}
+
 func (r *userRepository) Delete(id uuid.UUID) error {
 	if id == uuid.Nil {
 		return fmt.Errorf("invalid uuid: nil value")

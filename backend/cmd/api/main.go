@@ -4,6 +4,7 @@ import (
 	"api/config"
 	"api/container"
 	"api/database"
+	"api/migrations"
 	"api/routes"
 	"os"
 )
@@ -12,6 +13,8 @@ func main() {
 	config.LoadEnv()
 
 	dsn := os.Getenv("DB_URL")
+
+	migrations.RunMigration(dsn)
 
 	db, err := database.InitDB(dsn)
 	if err != nil {

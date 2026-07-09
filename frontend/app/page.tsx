@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getAccessToken } from "@/lib/auth";
 import {
   FiMessageCircle,
   FiHeart,
@@ -18,8 +20,16 @@ const floatStyle = (duration: string, delay: string) => ({
 });
 
 export default function Home() {
+  const router = useRouter();
   const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (getAccessToken()) {
+      router.push("/feed");
+      return;
+    }
+  }, [router]);
 
   useEffect(() => {
     const interval = setInterval(() => {

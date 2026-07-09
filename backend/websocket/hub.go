@@ -54,8 +54,9 @@ func (h *Hub) routeMessage(message Message) {
 		if message.GroupID == nil {
 			return
 		}
+		groupIDStr := *message.GroupID
 		for _, client := range h.Clients {
-			if h.clientInGroup(client, *message.GroupID) {
+			if h.clientInGroup(client, groupIDStr) {
 				select {
 				case client.Send <- message:
 				default:
@@ -75,10 +76,20 @@ func (h *Hub) routeMessage(message Message) {
 			default:
 			}
 		}
+
+	case MessageTypeFeedUpdate:
+		for _, client := range h.Clients {
+			select {
+			case client.Send <- message:
+			default:
+				delete(h.Clients, client.UserID)
+				close(client.Send)
+			}
+		}
 	}
 }
 
-func (h *Hub) clientInGroup(client *Client, groupID int) bool {
+func (h *Hub) clientInGroup(client *Client, groupID string) bool {
 	for _, id := range client.Groups {
 		if id == groupID {
 			return true

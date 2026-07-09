@@ -3,10 +3,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api";
-import { setAccessToken } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,8 +18,8 @@ export default function Login() {
     setError("");
     try {
       const result = await loginUser({ email, password });
-      setAccessToken(result.access_token);
-      router.push("/");
+      await login(result.access_token);
+      router.push("/feed");
     } catch (err: any) {
       setError(err.message);
     } finally {

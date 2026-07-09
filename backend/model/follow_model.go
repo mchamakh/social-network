@@ -22,12 +22,23 @@ type Follow struct {
 	UpdatedAt   time.Time
 }
 
+type FollowRequestPreview struct {
+	FollowID   uuid.UUID `json:"follow_id"`
+	FollowerID uuid.UUID `json:"follower_id"`
+	FirstName  string    `json:"first_name"`
+	LastName   string    `json:"last_name"`
+	NickName   *string   `json:"nickname,omitempty"`
+	Avatar     *string   `json:"avatar,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
 type FollowRepository interface {
 	Create(follow *Follow) error
 	Get(followerID, followingID uuid.UUID) (*Follow, error)
+	GetByID(id uuid.UUID) (*Follow, error)
 	UpdateStatus(id uuid.UUID, status FollowStatus) error
 	Delete(id uuid.UUID) error
 	GetFollowers(userID uuid.UUID) ([]User, error)
 	GetFollowing(userID uuid.UUID) ([]User, error)
-	GetPendingRequests(userID uuid.UUID) ([]Follow, error)
+	GetPendingRequests(userID uuid.UUID) ([]FollowRequestPreview, error)
 }

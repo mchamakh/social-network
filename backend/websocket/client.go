@@ -11,7 +11,7 @@ type Client struct {
 	UserID string
 	Conn   *websocket.Conn
 	Send   chan Message
-	Groups []int
+	Groups []string
 	Hub    *Hub
 }
 
